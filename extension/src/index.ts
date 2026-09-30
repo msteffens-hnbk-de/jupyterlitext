@@ -55,7 +55,7 @@ const extension: JupyterFrontEndPlugin<void> = {
               if (activeCell && (activeCell.model?.type === 'markdown' || (activeCell as any).cellType === 'markdown' || activeCell.node.classList.contains('jp-MarkdownCell'))) {
                 if (args.newValue === 'edit' && activeCell.rendered === false) {
                   if ((activeCell as any)._obsidianMode === 'rendered') {
-                    const nextMode = (activeCell as any)._lastEditMode || 'live';
+                    const nextMode = (activeCell as any)._lastEditMode || 'source';
                     setCellEditorMode(activeCell, nextMode);
                   }
                 } else if (args.newValue === 'command' && activeCell.rendered) {
@@ -1750,14 +1750,39 @@ function attachNemeToolbar(cell: MarkdownCell): void {
   const toolbar = document.createElement('div');
   toolbar.className = 'obsidian-floating-toolbar';
 
-  // Intelligente Modus-Erkennung: Falls Zelle editiert wird (!cell.rendered), nicht auf 'rendered' verharren
-  let curMode = (cell as any)._obsidianMode;
+  // Exakte Modus-Erkennung: Eine Zelle ohne Live-Preview DOM-Element ist 'source' (Quelle)
+  const hasLive = !!cell.node.querySelector('.obsidian-live-preview');
+  const hasSplit = !!cell.node.querySelector('.obsidian-split-preview');
+
+  let curMode: 'live' | 'split' | 'source' | 'rendered' = (cell as any)._obsidianMode;
   if (!curMode) {
-    curMode = cell.rendered ? 'rendered' : ((cell as any)._lastEditMode || 'live');
+    if (hasLive) {
+      curMode = 'live';
+    } else if (hasSplit) {
+      curMode = 'split';
+    } else if (cell.rendered) {
+      curMode = 'rendered';
+    } else {
+      // Eine neu erstellte Zelle in JupyterLab startet als reiner Quelltext-Editor -> Modus 'source'
+      curMode = (cell as any)._lastEditMode || 'source';
+    }
     (cell as any)._obsidianMode = curMode;
-  } else if (!cell.rendered && curMode === 'rendered') {
-    curMode = (cell as any)._lastEditMode || 'live';
-    (cell as any)._obsidianMode = curMode;
+  } else if (!cell.rendered) {
+    // Wenn die Zelle editiert wird, prüfen ob die Vorschau-Container tatsächlich existieren
+    if (curMode === 'rendered') {
+      curMode = hasLive ? 'live' : hasSplit ? 'split' : ((cell as any)._lastEditMode || 'source');
+      (cell as any)._obsidianMode = curMode;
+    } else if (curMode === 'live' && !hasLive) {
+      // Wurde als 'live' geführt, aber Live-Vorschau DOM fehlt -> Zelle ist tatsächlich 'source'
+      curMode = 'source';
+      (cell as any)._obsidianMode = 'source';
+    } else if (curMode === 'split' && !hasSplit) {
+      curMode = 'source';
+      (cell as any)._obsidianMode = 'source';
+    }
+  } else if (cell.rendered) {
+    curMode = 'rendered';
+    (cell as any)._obsidianMode = 'rendered';
   }
 
   toolbar.innerHTML = `
@@ -1909,7 +1934,7 @@ function attachNemeToolbar(cell: MarkdownCell): void {
       if ((e.target as HTMLElement)?.closest('.obsidian-floating-toolbar')) return;
       setTimeout(() => {
         if ((cell as any)._obsidianMode === 'rendered') {
-          const nextMode = (cell as any)._lastEditMode || 'live';
+          const nextMode = (cell as any)._lastEditMode || 'source';
           setCellEditorMode(cell, nextMode);
         }
       }, 50);
@@ -1923,7 +1948,7 @@ function attachNemeToolbar(cell: MarkdownCell): void {
       if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
         setTimeout(() => {
           if ((cell as any)._obsidianMode === 'rendered') {
-            const nextMode = (cell as any)._lastEditMode || 'live';
+            const nextMode = (cell as any)._lastEditMode || 'source';
             setCellEditorMode(cell, nextMode);
           }
         }, 50);
