@@ -213,6 +213,44 @@
   padding-top: 10px !important;
 }
 
+/* ========================================================= */
+/* 6. Optische Abtrennung für den Ausgabebereich (Output Area)*/
+/* ========================================================= */
+.jp-Notebook .jp-CodeCell .jp-Cell-outputWrapper {
+  margin-top: 14px !important;
+  padding-top: 10px !important;
+  border-top: 1px dashed #cbd5e1 !important; /* Klare gestrichelte Trennlinie zum Code */
+  position: relative !important;
+}
+
+.jp-Notebook .jp-CodeCell .jp-OutputArea {
+  background: #f8fafc !important; /* Diskreter Konsolen-/Ergebnisbereich */
+  border: 1px solid #e2e8f0 !important;
+  border-left: 4px solid #0284c7 !important; /* Markanter Akzentstreifen */
+  border-radius: 8px !important;
+  padding: 10px 14px !important;
+  margin: 4px 6px 8px 6px !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Out[x]: Prompt in klassischem Jupyter-Rot */
+.jp-Notebook .jp-CodeCell .jp-OutputPrompt {
+  color: #dc2626 !important;
+  font-size: 11px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-weight: 700 !important;
+  min-width: 60px !important;
+  padding-top: 2px !important;
+}
+
+/* Ausgabetext sauber formatiert */
+.jp-Notebook .jp-CodeCell .jp-OutputArea-output {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 12px !important;
+  color: #0f172a !important;
+  line-height: 1.55 !important;
+}
+
 /* Floating NeME Toolbar über aktiver Markdown-Zelle */
 .obsidian-floating-toolbar {
   display: flex;
