@@ -42,6 +42,8 @@ const extension: JupyterFrontEndPlugin<void> = {
         document.querySelectorAll('.obsidian-floating-toolbar').forEach(el => el.remove());
         if (cell && (cell.model?.type === 'markdown' || (cell as any).cellType === 'markdown' || cell.node.classList.contains('jp-MarkdownCell'))) {
           attachNemeToolbar(cell as MarkdownCell);
+        } else if (cell && (cell.model?.type === 'code' || (cell as any).cellType === 'code' || cell.node.classList.contains('jp-CodeCell'))) {
+          attachCodeCellToolbar(cell, notebookPanel, app);
         }
         setTimeout(() => transformRenderedMarkdown(notebookPanel), 100);
       });
@@ -284,6 +286,46 @@ function injectStyles(): void {
     .jp-Notebook .jp-Cell .jp-ToolbarButtonComponent:hover {
       background: #f1f5f9 !important;
       color: #0f172a !important;
+    }
+
+    /* Play & Stop Buttons in Code-Zell Toolbar */
+    .jp-Notebook .jp-Cell .jp-Cell-toolbar .obsidian-code-play-btn {
+      color: #059669 !important;
+      background: #ecfdf5 !important;
+      border: 1px solid #a7f3d0 !important;
+      font-weight: 600 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      padding: 2px 7px !important;
+      border-radius: 6px !important;
+      font-size: 11px !important;
+      cursor: pointer !important;
+      transition: background 0.15s ease, color 0.15s ease !important;
+    }
+    .jp-Notebook .jp-Cell .jp-Cell-toolbar .obsidian-code-play-btn:hover {
+      background: #d1fae5 !important;
+      color: #047857 !important;
+      border-color: #6ee7b7 !important;
+    }
+    .jp-Notebook .jp-Cell .jp-Cell-toolbar .obsidian-code-stop-btn {
+      color: #e11d48 !important;
+      background: #fff1f2 !important;
+      border: 1px solid #fecdd3 !important;
+      font-weight: 600 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      padding: 2px 7px !important;
+      border-radius: 6px !important;
+      font-size: 11px !important;
+      cursor: pointer !important;
+      transition: background 0.15s ease, color 0.15s ease !important;
+    }
+    .jp-Notebook .jp-Cell .jp-Cell-toolbar .obsidian-code-stop-btn:hover {
+      background: #ffe4e6 !important;
+      color: #be123c !important;
+      border-color: #fda4af !important;
     }
 
     /* 5. Editor-Fokusrahmen (blaue Umrandung im Editiermodus) deaktivieren */
@@ -1744,6 +1786,94 @@ function setCellEditorMode(cell: MarkdownCell, mode: 'live' | 'split' | 'source'
     cell.editor?.focus();
     showNemeToast('Live Vorschau unten aktiv');
     return;
+  }
+}
+
+/**
+ * Ergänzt die Zell-Toolbar aktiver Code-Zellen um die Buttons "Play" und "Stop"
+ */
+function attachCodeCellToolbar(cell: any, notebookPanel: NotebookPanel, app: JupyterFrontEnd): void {
+  if (!cell || !cell.node) return;
+
+  // Suche nach der existierenden Zell-Toolbar oder erstelle eine saubere Leiste
+  let toolbar = cell.node.querySelector('.jp-Cell-toolbar, .jp-cell-toolbar') as HTMLElement | null;
+  if (!toolbar) {
+    const inputWrapper = cell.node.querySelector('.jp-Cell-inputWrapper') || cell.node;
+    toolbar = document.createElement('div');
+    toolbar.className = 'jp-Cell-toolbar';
+    if (inputWrapper.parentNode) {
+      inputWrapper.parentNode.insertBefore(toolbar, inputWrapper);
+    } else {
+      cell.node.prepend(toolbar);
+    }
+  }
+
+  // Verhindert doppeltes Einfügen
+  if (toolbar.querySelector('.obsidian-code-play-btn')) return;
+
+  const btnGroup = document.createElement('div');
+  btnGroup.className = 'obsidian-code-actions-group';
+  btnGroup.style.display = 'inline-flex';
+  btnGroup.style.alignItems = 'center';
+  btnGroup.style.gap = '4px';
+  btnGroup.style.marginRight = '6px';
+
+  // 1. Play Button (Zelle ausführen)
+  const playBtn = document.createElement('button');
+  playBtn.className = 'jp-ToolbarButtonComponent obsidian-code-play-btn';
+  playBtn.title = 'Zelle ausführen (Play - Shift+Enter / Ctrl+Enter)';
+  playBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="6 3 20 12 6 21 6 3"></polygon>
+    </svg>
+    <span>Play</span>
+  `;
+  playBtn.onclick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    try {
+      app.commands.execute('notebook:run-cell');
+    } catch (_e) {
+      try {
+        (cell as any).execute(notebookPanel.sessionContext);
+      } catch (err) {
+        console.warn('Run cell fallback:', err);
+      }
+    }
+  };
+
+  // 2. Stop Button (Kernel unterbrechen / Ausführung anhalten)
+  const stopBtn = document.createElement('button');
+  stopBtn.className = 'jp-ToolbarButtonComponent obsidian-code-stop-btn';
+  stopBtn.title = 'Kernel unterbrechen / Ausführung stoppen (Stop)';
+  stopBtn.innerHTML = `
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <rect x="5" y="5" width="14" height="14" rx="2" ry="2"></rect>
+    </svg>
+    <span>Stop</span>
+  `;
+  stopBtn.onclick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    try {
+      app.commands.execute('notebook:interrupt-kernel');
+    } catch (_e) {
+      try {
+        notebookPanel.sessionContext.session?.kernel?.interrupt();
+      } catch (err) {
+        console.warn('Interrupt kernel fallback:', err);
+      }
+    }
+    showNemeToast('Kernel-Unterbrechung gesendet (Stop)');
+  };
+
+  btnGroup.appendChild(playBtn);
+  btnGroup.appendChild(stopBtn);
+
+  if (toolbar.firstChild) {
+    toolbar.insertBefore(btnGroup, toolbar.firstChild);
+  } else {
+    toolbar.appendChild(btnGroup);
   }
 }
 
