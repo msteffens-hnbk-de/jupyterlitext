@@ -134,37 +134,48 @@ function injectStyles(): void {
   styleEl.id = 'obsidian-extension-styles';
   styleEl.textContent = `
     /* ========================================================= */
-    /* NeME Card-Optik für alle Zellen in JupyterLite            */
+    /* NeME Card-Optik für alle Zellen in JupyterLite (Weiß/Klar) */
     /* ========================================================= */
     .jp-Notebook .jp-Cell {
       margin-top: 10px !important;
       margin-bottom: 16px !important;
-      border: 1px solid var(--jp-border-color1, #27272a) !important;
+      border: 1px solid #e2e8f0 !important;
       border-radius: 12px !important;
-      background: var(--jp-cell-editor-background, #18181b) !important;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22) !important;
+      background: #ffffff !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
       overflow: hidden !important;
       transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
       padding: 4px !important;
     }
 
+    /* Innenbereiche transparent halten, damit keine grauen Blöcke entstehen */
+    .jp-Notebook .jp-Cell .jp-Cell-inputWrapper,
+    .jp-Notebook .jp-Cell .jp-InputArea,
+    .jp-Notebook .jp-Cell .jp-Editor,
+    .jp-Notebook .jp-Cell .cm-editor,
+    .jp-Notebook .jp-Cell .jp-RenderedHTMLCommon {
+      background: transparent !important;
+    }
+
     /* Hover-Effekt auf Zellen */
     .jp-Notebook .jp-Cell:hover {
-      border-color: var(--jp-border-color2, #3f3f46) !important;
+      border-color: #cbd5e1 !important;
     }
 
     /* Ausgewählte Markdown-Zelle (NeME Amber Akzent) */
     .jp-Notebook .jp-MarkdownCell.jp-mod-active,
     .jp-Notebook .jp-MarkdownCell.jp-mod-selected {
       border-color: #f59e0b !important;
-      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.35), 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25), 0 4px 12px rgba(245, 158, 11, 0.08) !important;
+      background: #ffffff !important;
     }
 
     /* Ausgewählte Python Code-Zelle (Sky-Blue Akzent) */
     .jp-Notebook .jp-CodeCell.jp-mod-active,
     .jp-Notebook .jp-CodeCell.jp-mod-selected {
-      border-color: #38bdf8 !important;
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35), 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25), 0 4px 12px rgba(2, 132, 199, 0.08) !important;
+      background: #ffffff !important;
     }
 
     /* Klobigen linken Default-Balken von JupyterLab durch saubere Rundung ersetzen */
@@ -176,9 +187,10 @@ function injectStyles(): void {
       display: none !important;
     }
 
-    /* JupyterLab InputPrompt anpassen */
+    /* JupyterLab InputPrompt anpassen (transparent statt grau) */
     .jp-Notebook .jp-Cell .jp-InputPrompt {
-      color: #71717a !important;
+      background: transparent !important;
+      color: #94a3b8 !important;
       font-size: 11px !important;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
       font-weight: 500 !important;
