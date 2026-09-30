@@ -231,15 +231,44 @@ function injectStyles(): void {
       background: transparent !important;
     }
 
-    /* 4. Obere blaue Zelltitelleiste (Cell Toolbar) komplett ausblenden */
+    /* 4. Zell-Toolbar aktivieren – modern, schwebend & mit Abstand zum Text */
     .jp-Notebook .jp-Cell .jp-Cell-toolbar,
     .jp-Notebook .jp-Cell .jp-cell-toolbar,
     .jp-Notebook .jp-CellHeader {
-      display: none !important;
-      height: 0 !important;
-      padding: 0 !important;
-      margin: 0 !important;
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      height: auto !important;
+      align-items: center !important;
+      gap: 4px !important;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+      padding: 3px 8px !important;
+      margin-top: 4px !important;
+      margin-bottom: 12px !important; /* Ausreichend Abstand zum Zellinhalt */
+      width: fit-content !important;
+      margin-left: auto !important;   /* Rechtsbündig platziert */
+    }
+
+    /* Toolbar-Buttons sauber und ohne blaue Hintergründe */
+    .jp-Notebook .jp-Cell .jp-Cell-toolbar button,
+    .jp-Notebook .jp-Cell .jp-cell-toolbar button,
+    .jp-Notebook .jp-Cell .jp-ToolbarButtonComponent {
+      background: transparent !important;
       border: none !important;
+      border-radius: 6px !important;
+      color: #475569 !important;
+      padding: 3px 6px !important;
+      transition: background 0.15s ease, color 0.15s ease !important;
+    }
+
+    .jp-Notebook .jp-Cell .jp-Cell-toolbar button:hover,
+    .jp-Notebook .jp-Cell .jp-cell-toolbar button:hover,
+    .jp-Notebook .jp-Cell .jp-ToolbarButtonComponent:hover {
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
     }
 
     /* 5. Editor-Fokusrahmen (blaue Umrandung im Editiermodus) deaktivieren */
