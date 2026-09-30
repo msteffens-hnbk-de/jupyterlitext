@@ -11,9 +11,11 @@
   border-radius: 12px !important;
   background: #ffffff !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
-  overflow: hidden !important;
+  overflow: visible !important; /* Verhindert das Abschneiden von Toolbar und Menüs */
   transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
-  padding: 8px 6px 10px 6px !important;
+  padding: 8px 8px 12px 8px !important;
+  min-height: 84px !important; /* Vorgeschriebene Mindesthöhe für neue & kleine Zellen */
+  box-sizing: border-box !important;
 }
 
 /* Innenbereiche transparent halten – keine grauen Blöcke */
@@ -27,14 +29,25 @@
   box-shadow: none !important;
 }
 
-/* Zell-Inhalt mit angenehmer Luft nach oben */
+/* Mindesthöhe für Eingabebereich & Editor, damit Toolbar & Inhalt nie gequetscht werden */
 .jp-Notebook .jp-Cell .jp-Cell-inputWrapper {
   padding-top: 6px !important;
   margin-top: 2px !important;
+  min-height: 52px !important;
+}
+
+.jp-Notebook .jp-Cell .jp-InputArea {
+  min-height: 48px !important;
+}
+
+.jp-Notebook .jp-Cell .jp-Editor,
+.jp-Notebook .jp-Cell .cm-editor {
+  min-height: 44px !important;
 }
 
 .jp-Notebook .jp-Cell .jp-RenderedHTMLCommon {
   padding: 6px 12px !important;
+  min-height: 40px !important;
 }
 
 .jp-Notebook .jp-Cell:hover {
@@ -117,6 +130,8 @@
   margin-bottom: 12px !important; /* Ausreichend Abstand zum Zellinhalt */
   width: fit-content !important;
   margin-left: auto !important;   /* Rechtsbündig platziert */
+  z-index: 10 !important;
+  flex-shrink: 0 !important;
 }
 
 /* Toolbar-Buttons sauber und ohne blaue Hintergründe */
