@@ -133,6 +133,58 @@ function injectStyles(): void {
   const styleEl = document.createElement('style');
   styleEl.id = 'obsidian-extension-styles';
   styleEl.textContent = `
+    /* ========================================================= */
+    /* NeME Card-Optik für alle Zellen in JupyterLite            */
+    /* ========================================================= */
+    .jp-Notebook .jp-Cell {
+      margin-top: 10px !important;
+      margin-bottom: 16px !important;
+      border: 1px solid var(--jp-border-color1, #27272a) !important;
+      border-radius: 12px !important;
+      background: var(--jp-cell-editor-background, #18181b) !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22) !important;
+      overflow: hidden !important;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+      padding: 4px !important;
+    }
+
+    /* Hover-Effekt auf Zellen */
+    .jp-Notebook .jp-Cell:hover {
+      border-color: var(--jp-border-color2, #3f3f46) !important;
+    }
+
+    /* Ausgewählte Markdown-Zelle (NeME Amber Akzent) */
+    .jp-Notebook .jp-MarkdownCell.jp-mod-active,
+    .jp-Notebook .jp-MarkdownCell.jp-mod-selected {
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.35), 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* Ausgewählte Python Code-Zelle (Sky-Blue Akzent) */
+    .jp-Notebook .jp-CodeCell.jp-mod-active,
+    .jp-Notebook .jp-CodeCell.jp-mod-selected {
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35), 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* Klobigen linken Default-Balken von JupyterLab durch saubere Rundung ersetzen */
+    .jp-Notebook .jp-Cell::before {
+      display: none !important;
+    }
+    .jp-Notebook .jp-Cell.jp-mod-active::before,
+    .jp-Notebook .jp-Cell.jp-mod-selected::before {
+      display: none !important;
+    }
+
+    /* JupyterLab InputPrompt anpassen */
+    .jp-Notebook .jp-Cell .jp-InputPrompt {
+      color: #71717a !important;
+      font-size: 11px !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+      font-weight: 500 !important;
+      padding-top: 10px !important;
+    }
+
     /* Toolbar im NeME Dark Theme - fest verankert DARUNTER */
     .obsidian-markdown-cell .jp-Cell-inputWrapper {
       display: flex !important;
