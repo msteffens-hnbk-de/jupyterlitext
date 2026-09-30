@@ -134,7 +134,7 @@ function injectStyles(): void {
   styleEl.id = 'obsidian-extension-styles';
   styleEl.textContent = `
     /* ========================================================= */
-    /* NeME Card-Optik für alle Zellen in JupyterLite (Weiß/Klar) */
+    /* NeME Card-Optik für alle Zellen in JupyterLite (Clean Card)*/
     /* ========================================================= */
     .jp-Notebook .jp-Cell {
       margin-top: 10px !important;
@@ -145,46 +145,111 @@ function injectStyles(): void {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
       overflow: hidden !important;
       transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
-      padding: 4px !important;
+      padding: 8px 6px 10px 6px !important;
     }
 
-    /* Innenbereiche transparent halten, damit keine grauen Blöcke entstehen */
+    /* Innenbereiche transparent halten – keine grauen Blöcke */
     .jp-Notebook .jp-Cell .jp-Cell-inputWrapper,
     .jp-Notebook .jp-Cell .jp-InputArea,
     .jp-Notebook .jp-Cell .jp-Editor,
     .jp-Notebook .jp-Cell .cm-editor,
     .jp-Notebook .jp-Cell .jp-RenderedHTMLCommon {
       background: transparent !important;
+      outline: none !important;
+      box-shadow: none !important;
     }
 
-    /* Hover-Effekt auf Zellen */
+    /* Zell-Inhalt mit angenehmer Luft nach oben */
+    .jp-Notebook .jp-Cell .jp-Cell-inputWrapper {
+      padding-top: 6px !important;
+      margin-top: 2px !important;
+    }
+
+    .jp-Notebook .jp-Cell .jp-RenderedHTMLCommon {
+      padding: 6px 12px !important;
+    }
+
+    /* Sanfter Hover-Effekt */
     .jp-Notebook .jp-Cell:hover {
       border-color: #cbd5e1 !important;
     }
 
-    /* Ausgewählte Markdown-Zelle (NeME Amber Akzent) */
+    /* Aktive Markdown-Zelle (dezenter warmer Akzent, keine Balken) */
     .jp-Notebook .jp-MarkdownCell.jp-mod-active,
     .jp-Notebook .jp-MarkdownCell.jp-mod-selected {
       border-color: #f59e0b !important;
-      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25), 0 4px 12px rgba(245, 158, 11, 0.08) !important;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2), 0 4px 12px rgba(245, 158, 11, 0.06) !important;
       background: #ffffff !important;
     }
 
-    /* Ausgewählte Python Code-Zelle (Sky-Blue Akzent) */
+    /* Aktive Python Code-Zelle: Dezent neutral statt grell-blau */
     .jp-Notebook .jp-CodeCell.jp-mod-active,
     .jp-Notebook .jp-CodeCell.jp-mod-selected {
-      border-color: #0284c7 !important;
-      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25), 0 4px 12px rgba(2, 132, 199, 0.08) !important;
+      border-color: #94a3b8 !important;
+      box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.25), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
       background: #ffffff !important;
     }
 
-    /* Klobigen linken Default-Balken von JupyterLab durch saubere Rundung ersetzen */
-    .jp-Notebook .jp-Cell::before {
-      display: none !important;
-    }
+    /* ========================================================= */
+    /* ALLE BLAUEN BALKEN & INDIKATOREN VOLLSTÄNDIG DEAKTIVIEREN */
+    /* ========================================================= */
+    /* 1. Pseudoelement-Balken (oben & links) komplett abschalten */
+    .jp-Notebook .jp-Cell::before,
+    .jp-Notebook .jp-Cell::after,
+    .jp-Notebook-cell::before,
+    .jp-Notebook-cell::after,
+    .jp-Cell::before,
+    .jp-Cell::after,
     .jp-Notebook .jp-Cell.jp-mod-active::before,
-    .jp-Notebook .jp-Cell.jp-mod-selected::before {
+    .jp-Notebook .jp-Cell.jp-mod-active::after,
+    .jp-Notebook .jp-Cell.jp-mod-selected::before,
+    .jp-Notebook .jp-Cell.jp-mod-selected::after {
       display: none !important;
+      content: none !important;
+      height: 0 !important;
+      width: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+
+    /* 2. Dicke Rahmen-Balken an aktiven Zellen zurücksetzen */
+    .jp-Notebook .jp-Cell.jp-mod-active,
+    .jp-Notebook .jp-Cell.jp-mod-selected,
+    .jp-Notebook-cell.jp-mod-active,
+    .jp-Notebook-cell.jp-mod-selected {
+      border-top-width: 1px !important;
+      border-left-width: 1px !important;
+      outline: none !important;
+    }
+
+    /* 3. Blaue Klapp-/Collapser-Leisten am linken Rand ausblenden */
+    .jp-Notebook .jp-Cell .jp-Collapser,
+    .jp-Notebook .jp-Cell .jp-Cell-inputCollapser,
+    .jp-Notebook .jp-Cell .jp-Cell-outputCollapser {
+      display: none !important;
+      width: 0 !important;
+      background: transparent !important;
+    }
+
+    /* 4. Obere blaue Zelltitelleiste (Cell Toolbar) komplett ausblenden */
+    .jp-Notebook .jp-Cell .jp-Cell-toolbar,
+    .jp-Notebook .jp-Cell .jp-cell-toolbar,
+    .jp-Notebook .jp-CellHeader {
+      display: none !important;
+      height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: none !important;
+    }
+
+    /* 5. Editor-Fokusrahmen (blaue Umrandung im Editiermodus) deaktivieren */
+    .jp-Notebook.jp-mod-editMode .jp-Cell.jp-mod-active .jp-InputArea-editor,
+    .jp-Notebook .jp-Cell .jp-InputArea-editor,
+    .jp-Notebook .jp-Cell .cm-editor.cm-focused,
+    .jp-Notebook .jp-Cell .cm-focused {
+      outline: none !important;
+      border-color: transparent !important;
+      box-shadow: none !important;
     }
 
     /* JupyterLab InputPrompt anpassen (transparent statt grau) */
