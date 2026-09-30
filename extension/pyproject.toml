@@ -24,7 +24,7 @@ build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
     "jupyterlite_neme_markdown/labextension/package.json",
 ]
-skip-if-exists = ["jupyterlite_neme_markdown/labextension/static/remoteEntry.js"]
+skip-if-exists = ["jupyterlite_neme_markdown/labextension/package.json"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 build_cmd = "build:prod"
